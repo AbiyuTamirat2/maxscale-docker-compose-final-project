@@ -28,6 +28,19 @@ enforce_read_only_slaves=1
 # Service definitions
 # Service Definition for a read-only service and a read/write splitting service.
 
+[Sharded-Service]
+type=service
+router=schemarouter
+servers=server1,server2
+user=maxuser
+password=maxpwd
+
+[Sharded-Service-Listener]
+type=listener
+service=Sharded-Service
+protocol=MariaDBClient
+port=4000
+
 # ReadConnRoute documentation:
 # https://github.com/mariadb-corporation/MaxScale/blob/2.3/Documentation/Routers/ReadConnRoute.md
 
