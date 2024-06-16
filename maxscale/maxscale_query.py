@@ -10,7 +10,7 @@ import mysql.connector
 
 def connect_to_db():
     # Establish a connection to the MariaDB database via MaxScale
-    return mysql.connector.connect(user="maxuser", password="maxpwd", host="10.0.0.218", port=4000)
+    return mysql.connector.connect(user="maxuser", password="maxpwd", host="10.0.0.229", port=4000)
 
 
 def fetch_largest_zipcode(cursor):
