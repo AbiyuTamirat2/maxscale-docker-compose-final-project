@@ -1,90 +1,106 @@
-# MariaDB MaxScale Docker image
+# MaxScale Docker Compose Final Project
 
-This Docker image runs the latest 2.4 version of MariaDB MaxScale.
+## Introduction
 
--	[Travis CI:  
-	![build status badge](https://img.shields.io/travis/mariadb-corporation/maxscale-docker/master.svg)](https://travis-ci.org/mariadb-corporation/maxscale-docker/branches)
+Welcome to the Sharded Database Setup guide using MaxScale and Docker Compose! This README.md provides comprehensive instructions for configuring and deploying a sharded database environment with MariaDB MaxScale. It covers setting up MaxScale using Docker Compose, configuring MaxScale with example.cnf for managing two master databases, and interacting with the setup using a Python script.
 
-## Running
-[The MaxScale docker-compose setup](./docker-compose.yml) contains MaxScale
-configured with a three node master-slave cluster. To start it, run the
-following commands in this directory.
+## Getting Started
 
-```
-docker-compose build
-docker-compose up -d
-```
+Follow these instructions to set up and run the project on your local system.
 
-After MaxScale and the servers have started (takes a few minutes), you can find
-the readwritesplit router on port 4006 and the readconnroute on port 4008. The
-user `maxuser` with the password `maxpwd` can be used to test the cluster.
-Assuming the mariadb client is installed on the host machine:
-```
-$ mysql -umaxuser -pmaxpwd -h 127.0.0.1 -P 4006 test
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 5
-Server version: 10.2.12 2.2.9-maxscale mariadb.org binary distribution
+### Prerequisites
 
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+Ensure you have the following software installed on your system:
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+1. [Ubuntu 22.04.4 LTS (Jammy Jellyfish)] (https://releases.ubuntu.com/jammy/)
+2. [Python 3] (https://www.python.org/downloads/)
+3. [PyCharm IDE] (https://www.jetbrains.com/pycharm/download/?section=windows)
+4. Install required Python packages using PyCharm, such as:
+ - MySQL Connector for Python: import mysql.connector
+5. Docker Compose
+6. MariaDB Server
 
-MySQL [test]>
-```
-You can edit the [`maxscale.cnf.d/example.cnf`](./maxscale.cnf.d/example.cnf)
-file and recreate the MaxScale container to change the configuration.
-
-To stop the containers, execute the following command. Optionally, use the -v
-flag to also remove the volumes.
-
-To run maxctrl in the container to see the status of the cluster:
-```
-$ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬──────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID     │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server1 │ master  │ 3306 │ 0           │ Master, Running │ 0-3000-5 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Slave, Running  │ 0-3000-5 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼──────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Running         │ 0-3000-5 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴──────────┘
+You can install Docker, Docker Compose, and MariaDB Server with the following commands:
 
 ```
-
-The cluster is configured to utilize automatic failover. To illustrate this you can stop the master
-container and watch for maxscale to failover to one of the original slaves and then show it rejoining
-after recovery:
-```
-$ docker-compose stop master
-Stopping maxscaledocker_master_1 ... done
-$ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬─────────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID        │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server1 │ master  │ 3306 │ 0           │ Down            │ 0-3000-5    │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Master, Running │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴─────────────┘
-$ docker-compose start master
-Starting master ... done
-$ docker-compose exec maxscale maxctrl list servers
-┌─────────┬─────────┬──────┬─────────────┬─────────────────┬─────────────┐
-│ Server  │ Address │ Port │ Connections │ State           │ GTID        │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server1 │ master  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server2 │ slave1  │ 3306 │ 0           │ Master, Running │ 0-3001-7127 │
-├─────────┼─────────┼──────┼─────────────┼─────────────────┼─────────────┤
-│ server3 │ slave2  │ 3306 │ 0           │ Slave, Running  │ 0-3001-7127 │
-└─────────┴─────────┴──────┴─────────────┴─────────────────┴─────────────┘
+sudo apt install docker-compose
 
 ```
-
-Once complete, to remove the cluster and maxscale containers:
+sudo apt install mariadb-server
 
 ```
-docker-compose down -v
+### Setup
+
+1. Create a directory for your project and navigate into it:
+\```bash
+mkdir final
+cd final
+\```
+
+2. Clone the MaxScale Docker repository from GitHub:
+\```bash
+git clone https://github.com/AbiyuTamirat2/maxscale-docker-compose-final-project
+cd maxscale-docker-compose-final-project/maxscale
+\```
+
+
+3. Edit the docker-compose.yml file to configure your MaxScale setup:
+\```bash
+sudo nano docker-compose.yml
+\```
+
+4. Start the MaxScale setup with Docker Compose:
+\```bash
+sudo docker-compose up -d
+\```
+
+5. Check the status of MaxScale and the servers:
+\```bash
+sudo docker-compose exec maxscale maxctrl list servers
+\```
+
+6. Access MariaDB through MaxScale:
+\```bash
+sudo mariadb -umaxuser -pmaxpwd -h 127.0.0.1 -P 4000
+\```
+
+### Tear Down
+To stop and remove the containers:
+\```bash
+sudo docker-compose down --volumes --remove-orphans
+\```
+
+### Configuration
+#### Maxscale Docker-Compose Setup
+The docker-compose.yml file in the maxscale directory defines the MaxScale setup with:
+- Two Master databases (dbmaster1, dbmaster2)
+- One MaxScale instance (maxscale)
+
+#### Configuring MaxScale
+Edit the example.cnf file inside the maxscale.cnf.d directory to configure MaxScale's connection to the two master database shards:
+\```bash
+sudo nano maxscale.cnf.d/example.cnf
+\```
+
+Ensure the configuration aligns with your setup and save the file.
+
+#### Running the Python Script
+Ensure Python is installed, and use the provided script to connect to MaxScale and execute the queries.
+
+
+
+Output of sudo docker-compose exec maxscale maxctrl list servers:
 ```
+┌─────────┬──────────┬──────┬─────────────┬─────────────────┬──────────┬─────────────────────┐
+│ Server  │ Address  │ Port │ Connections │ State           │ GTID     │ Monitor             │
+├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
+│ dbmaster1│ dbmaster1 │ 3306 │ 0           │ Master, Running │      │ MariaDB-Monitor     │
+├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
+│dbmaster2 │ dbmaster2 │ 3306 │ 0           │ Running         │         │ MariaDB-Monitor     │
+└─────────┴──────────┴──────┴─────────────┴─────────────────┴──────────┴─────────────────────┘
+
+```
+
+## Credits
+
+Special thanks to Christine Sutton for her valuable guidance throughout this project, and to Zak for providing the original codebase that we adapted to meet our needs. Your support and contributions have been crucial to our success.
