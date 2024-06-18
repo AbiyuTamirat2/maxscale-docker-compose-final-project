@@ -24,63 +24,70 @@ You can install Docker, Docker Compose, and MariaDB Server with the following co
 
 ```
 sudo apt install docker-compose
-
 ```
 sudo apt install mariadb-server
-
 ```
+
 ### Setup
 
 1. Create a directory for your project and navigate into it:
-\```bash
+
+```
 mkdir final
+```
+```
 cd final
-\```
+```
 
 2. Clone the MaxScale Docker repository from GitHub:
-\```bash
+
+```
 git clone https://github.com/AbiyuTamirat2/maxscale-docker-compose-final-project
 cd maxscale-docker-compose-final-project/maxscale
-\```
+```
 
 
 3. Edit the docker-compose.yml file to configure your MaxScale setup:
-\```bash
+```
 sudo nano docker-compose.yml
-\```
+```
 
 4. Start the MaxScale setup with Docker Compose:
-\```bash
+```
 sudo docker-compose up -d
-\```
+```
 
 5. Check the status of MaxScale and the servers:
-\```bash
+```
 sudo docker-compose exec maxscale maxctrl list servers
-\```
+```
 
 6. Access MariaDB through MaxScale:
-\```bash
+```
 sudo mariadb -umaxuser -pmaxpwd -h 127.0.0.1 -P 4000
-\```
+```
 
 ### Tear Down
+
 To stop and remove the containers:
-\```bash
+```
 sudo docker-compose down --volumes --remove-orphans
-\```
+```
 
 ### Configuration
+
 #### Maxscale Docker-Compose Setup
+
 The docker-compose.yml file in the maxscale directory defines the MaxScale setup with:
 - Two Master databases (dbmaster1, dbmaster2)
 - One MaxScale instance (maxscale)
 
 #### Configuring MaxScale
+
 Edit the example.cnf file inside the maxscale.cnf.d directory to configure MaxScale's connection to the two master database shards:
-\```bash
+```
 sudo nano maxscale.cnf.d/example.cnf
-\```
+```
 
 Ensure the configuration aligns with your setup and save the file.
 
@@ -90,15 +97,15 @@ Ensure Python is installed, and use the provided script to connect to MaxScale a
 
 
 Output of sudo docker-compose exec maxscale maxctrl list servers:
-```
-┌─────────┬──────────┬──────┬─────────────┬─────────────────┬──────────┬─────────────────────┐
-│ Server  │ Address  │ Port │ Connections │ State           │ GTID     │ Monitor             │
-├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
-│ dbmaster1│ dbmaster1 │ 3306 │ 0           │ Master, Running │      │ MariaDB-Monitor     │
-├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
-│dbmaster2 │ dbmaster2 │ 3306 │ 0           │ Running         │         │ MariaDB-Monitor     │
-└─────────┴──────────┴──────┴─────────────┴─────────────────┴──────────┴─────────────────────┘
 
+```
+┌─────────┬──────────┬──────┬─────────────┬───────────────┬──────────┬─────────────────┐
+│ Server     │ Address     │ Port   │ Connections 	   │ State             │ GTID        │ Monitor              │
+├─────────┼──────────┼──────┼─────────────┼───────────────┼──────────┼─────────────────┤
+│ dbmaster1  │ dbmaster1   │ 3306   │ 0              │ Master, Running    │             │ MariaDB-Monitor    	 │
+├─────────┼──────────┼──────┼─────────────┼───────────────┼──────────┼─────────────────┤
+│ dbmaster2  │ dbmaster2  │ 3306    │ 0              │ Running            │             │ MariaDB-Monitor      │
+└─────────┴──────────┴──────┴─────────────┴───────────────┴──────────┴─────────────────┘
 ```
 
 ## Credits
