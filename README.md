@@ -25,6 +25,7 @@ You can install Docker, Docker Compose, and MariaDB Server with the following co
 ```
 sudo apt install docker-compose
 ```
+```
 sudo apt install mariadb-server
 ```
 
@@ -99,13 +100,13 @@ Ensure Python is installed, and use the provided script to connect to MaxScale a
 Output of sudo docker-compose exec maxscale maxctrl list servers:
 
 ```
-┌─────────┬──────────┬──────┬─────────────┬───────────────┬──────────┬─────────────────┐
-│ Server     │ Address     │ Port   │ Connections 	   │ State             │ GTID        │ Monitor              │
-├─────────┼──────────┼──────┼─────────────┼───────────────┼──────────┼─────────────────┤
-│ dbmaster1  │ dbmaster1   │ 3306   │ 0              │ Master, Running    │             │ MariaDB-Monitor    	 │
-├─────────┼──────────┼──────┼─────────────┼───────────────┼──────────┼─────────────────┤
-│ dbmaster2  │ dbmaster2  │ 3306    │ 0              │ Running            │             │ MariaDB-Monitor      │
-└─────────┴──────────┴──────┴─────────────┴───────────────┴──────────┴─────────────────┘
+┌─────────┬──────────┬──────┬─────────────┬─────────────────┬──────────┬─────────────────────┐
+│ Server     │ Address     │ Port   │ Connections     │ State               │ GTID         │ Monitor                   │
+├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
+│ dbmaster1  │ dbmaster1   │ 3306   │ 0              │ Master, Running      │              │ MariaDB-Monitor           │
+├─────────┼──────────┼──────┼─────────────┼─────────────────┼──────────┼─────────────────────┤
+│ dbmaster2  │ dbmaster2   │ 3306   │ 0              │ Running              │             │ MariaDB-Monitor            │
+└─────────┴──────────┴──────┴─────────────┴─────────────────┴──────────┴─────────────────────┘
 ```
 
 ## Credits
